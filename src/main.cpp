@@ -43,8 +43,14 @@ int main()
 	tf->setH(5,CHARACTER_UNIT);
 	tf->setColorPair("3");
 	
+	Label* label = new Label();
+	label->setValue("Zażółć gęślą jeźń ß ™ 简体中文, 繁體中文, فارسی, Ελληνικά, 日本語, 한국어, Русский, Українська");
+	label->setXYWH(0,10,100,5,PERCENT_UNIT);
+	label->setColorPair("3");
+	
 	panel->add(tf);
-	panel2->add(tf);
+	//panel2->add(tf);
+	panel2->add(label);
 	lay->add(panel);
 	lay->add(panel2);
 	
