@@ -193,7 +193,7 @@ void TUIObject::showTextOn(string str, int x, int y,string colPair, chtype attri
 }
 void TUIObject::drawBorder()
 {
-	if(!UTF8String::isUTF8Available)
+	if(!UTF8String::isUTF8Available())
 		setBorderChars("-","|","+","+","+","+");
 		
 	setBorder(true);
