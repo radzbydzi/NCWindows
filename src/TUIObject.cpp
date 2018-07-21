@@ -1,6 +1,7 @@
 #include "TUIObject.h"
 #include "UTF8String.h"
 #include "Colors.h"
+#include<iostream>
 TUIObject::TUIObject()
 {
 	
@@ -133,6 +134,7 @@ void TUIObject::setFocus(bool focus)//sets focus from given bool
 {
 	this->focus=focus;
 }	
+//-------------
 void TUIObject::setColorPair(string colorPair)//sets default color pair
 {
 	this->colorPair=colorPair;
@@ -141,6 +143,7 @@ string TUIObject::getColorPair()//gets default color pair
 {
 	return colorPair;
 }
+//-------------
 void TUIObject::setBorderChars(string hor, string vert, string uppleft, string uppright, string lowleft, string lowright)
 {
 	horBor=hor;
@@ -150,15 +153,61 @@ void TUIObject::setBorderChars(string hor, string vert, string uppleft, string u
 	leftLowerBor=lowleft;
 	rightLowerBor=lowright;
 }
-void TUIObject::setBorder(bool b)//sets border from given bool
+void TUIObject::setBorder(bool b)
 {
-	border=b;
-		
+	if(b)
+	{
+		setBorderTop(true);
+		setBorderBottom(true);
+		setBorderLeft(true);
+		setBorderRight(true);
+	}else
+	{
+		setBorderTop(false);
+		setBorderBottom(false);
+		setBorderLeft(false);
+		setBorderRight(false);
+	}
+	
 }
-bool TUIObject::getBorder()//gets border state
+void TUIObject::setBorderTop(bool b)
 {
-	return border;
+	borderTop=b;
 }
+void TUIObject::setBorderBottom(bool b)
+{
+	borderBottom=b;
+}
+void TUIObject::setBorderLeft(bool b)
+{
+	borderLeft=b;
+}
+void TUIObject::setBorderRight(bool b)
+{
+	borderRight=b;
+}
+//-------------
+bool TUIObject::getBorderTop()
+{
+	return true;
+	return borderTop;
+}
+bool TUIObject::getBorderBottom()
+{
+	return true;
+	return borderBottom;
+}
+bool TUIObject::getBorderLeft()
+{
+	return true;
+	return borderLeft;
+}
+bool TUIObject::getBorderRight()
+{
+	return true;
+	return borderRight;
+}
+//-------------
 void TUIObject::showTextOn(string str, int x, int y)//show string on local x,y
 {
 	showTextOn(str,x,y,false);
@@ -178,24 +227,39 @@ void TUIObject::showTextOn(string str, int x, int y,string colPair, bool ignoreB
 
 void TUIObject::showTextOn(string str, int x, int y,string colPair, chtype attributes, bool ignoreBorder)//show string on local x,y
 {
-	int border=0;
-	if(ignoreBorder==false && getBorder()==true)
+	int bTB=0;
+	int bLR=0;
+	
+	
+	if(getBorderTop())
 	{
-		border=1;
+		bTB++;
 	}
-	if(x>getWChU()-1-2*border || y>getHChU()-1-2*border)//2 times border because of 2 sides(left-right top-bottom)
+	if(getBorderBottom())
+	{
+		bTB++;
+	}
+	if(getBorderLeft())
+	{
+		bLR++;
+	}
+	if(getBorderRight())
+	{
+		bLR++;
+	}
+	if(x>getWChU()-1-bLR || y>getHChU()-1-bTB)
 		return;
 		
 	int cpId=Colors::getColorPairId(colPair);
 	attron(COLOR_PAIR(cpId)|attributes);
-	mvaddstr(originY+getYChU()+y+border, originX+getXChU()+x+border, str.c_str());
+	str=UTF8String::safeString(str);
+	mvaddstr(originY+getYChU()+y+bTB, originX+getXChU()+x+bLR, str.c_str());
 	attroff(COLOR_PAIR(cpId)|attributes);	
 }
 void TUIObject::drawBorder()
 {
 	if(!UTF8String::isUTF8Available())
 		setBorderChars("-","|","+","+","+","+");
-		
 	setBorder(true);
 	int width = getWChU();
 	int height = getHChU();
@@ -204,46 +268,41 @@ void TUIObject::drawBorder()
 		width=originW;//width is lenght of horizontal origin
 	if(height>originH)
 		height=originH;//vertical origin
-		
+	
 	for(int x=0; x<width; x++)
 		{
 			for(int y=0; y<height; y++)
 			{
-				string znak="";//sign we puts letter to show
-				if(getBorder())
-				{					
-					if(y==0)//if first row
-					{
+				string znak="";//sign we put letter to show
 						
-						if(x==0)//if first col
-							znak = leftUpperBor;
-						else if(x==width-1)//if last col
-							znak = rightUpperBor;
-						else
-							znak = horBor;
-						showTextOn(znak,x,y,true);//draw text
-						
-					}
-					else if(y==height-1)//if last row
-					{
-						if(x==0)//if first col
-							znak = leftLowerBor;
-						else if(x==width-1)//if last col
-							znak = rightLowerBor;
-						else
-							znak = horBor;
-						showTextOn(znak,x,y,true);
-					}
-					else//any other lines
-					{
-						if(x==0 || x==width-1)//if first or last column
-						{
-							znak = vertBor;
-						}
+				if(y==0 && getBorderTop()==true)//if first row
+				{
 					
-						showTextOn(znak,x,y,true);
+					if(x==0 && getBorderLeft()==true)//if first col and border left
+						znak = leftUpperBor;
+					else if(x==width-1 && getBorderRight()==true)//if last col and border right
+						znak = rightUpperBor;
+					else
+						znak = horBor;		
+							
+				}
+				else if(y==height-1 && getBorderBottom()==true)//if last row
+				{
+					if(x==0 && getBorderLeft()==true)//if first col
+						znak = leftLowerBor;
+					else if(x==width-1 && getBorderRight()==true)//if last col
+						znak = rightLowerBor;
+					else
+						znak = horBor;	
+				}
+				else//any other lines
+				{
+					if( (x==0 && getBorderLeft()==true) || (x==width-1 && getBorderRight()==true) )//if first or last column
+					{
+						znak = vertBor;
 					}
 				}
+				showTextOn(znak,x,y,true);
 			}
 		}
 		

@@ -47,6 +47,17 @@ class UTF8String{
 			}
 			return str;
 		}
+		static string safeString(string str)
+		{
+			string* ch = charTable(str);
+			unsigned int s = size(str);
+			string res="";
+			for(unsigned int i=0; i<s; i++)
+			{
+				res+=ch[i];
+			}
+			return res;
+		}
 		static string at(string s, int num)
 		{
 			return charTable(s)[num];

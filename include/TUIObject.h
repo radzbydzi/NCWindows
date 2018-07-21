@@ -3,7 +3,7 @@
 #define PERCENT_UNIT 0
 #define CHARACTER_UNIT 1
 #include<string>
-#include<vector>
+//#include<vector>
 #include<ncurses.h>
 using namespace std;
 
@@ -19,9 +19,14 @@ class TUIObject{
 		int unitH=CHARACTER_UNIT;
 		string name;
 		bool focus=false;
-		bool border=false;
 		string colorPair;
+		
 		//BORDERS
+		bool borderTop=true;
+		bool borderBottom=true;
+		bool borderLeft=true;
+		bool borderRight=true;
+		
 		string horBor="─";
 		string vertBor="│";
 		string leftUpperBor="┌";
@@ -64,20 +69,34 @@ class TUIObject{
 		//--------------------
 		bool getFocus();
 		void setFocus(bool focus);
+		//--------------------
 		void setColorPair(string name);
 		string getColorPair();
+		//--------------------
 		void setBorderChars(string hor, string vert, string uppleft, string uppright, string lowleft, string lowright);
 		void setBorder(bool b);
-		bool getBorder();
+		void setBorderTop(bool b);
+		void setBorderBottom(bool b);
+		void setBorderLeft(bool b);
+		void setBorderRight(bool b);
+		//--------------------
+		bool getBorderTop();
+		bool getBorderBottom();
+		bool getBorderLeft();
+		bool getBorderRight();
+		//--------------------
 		virtual void draw()=0;
+		//--------------------
 		void showTextOn(string str, int x, int y);
 		void showTextOn(string str, int x, int y, bool ignoreBorder);
 		void showTextOn(string str, int x, int y, chtype attributes, bool ignoreBorder);
 		void showTextOn(string str, int x, int y,string colPair, bool ignoreBorder);
 		void showTextOn(string str, int x, int y,string colPair, chtype attributes, bool ignoreBorder);
+		//--------------------
 		void drawBorder();
 		void drawBackground();
 		void drawShadow();
+		//--------------------
 		void setOrigin(int oX, int oY, int oW, int oH);
 };
 

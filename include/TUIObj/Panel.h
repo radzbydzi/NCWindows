@@ -1,6 +1,7 @@
 #ifndef __PANEL_H_INCLUDED__
 #define __PANEL_H_INCLUDED__
 #include<ncurses.h>
+#include<vector>
 #include "TUIObject.h"
 using namespace std;
 class Panel : public TUIObject{
